@@ -10,6 +10,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/luketpickering/gobar/internal"
 )
 
 func chomp(s string) string {
@@ -18,41 +20,6 @@ func chomp(s string) string {
 
 func chompb(s []byte) string {
 	return chomp(string(s))
-}
-
-func ColorText(s string, c string) string {
-	return fmt.Sprintf("<span foreground='%v'>%v</span>", c, s)
-}
-func ColorBackground(s string, c string) string {
-	return fmt.Sprintf("<span background='%v'>%v</span>", c, s)
-}
-
-func WhiteText(s string) string {
-	return ColorText(s, "white")
-}
-
-func RedText(s string) string {
-	return ColorText(s, "#dc143c")
-}
-
-func GreenText(s string) string {
-	return ColorText(s, "#32cd32")
-}
-
-func BlueText(s string) string {
-	return ColorText(s, "#7dacd5")
-}
-func OrangeBackground(s string) string {
-	return ColorBackground(s, "#f29f54")
-}
-func DarkGreyText(s string) string {
-	return ColorText(s, "#323232")
-}
-func OrangeText(s string) string {
-	return ColorText(s, "#f29f54")
-}
-func BoldText(s string) string {
-	return fmt.Sprintf("<span weight='ultrabold'>%v</span>", s)
 }
 
 type Block struct {
@@ -153,7 +120,7 @@ func (b *BatteryBlock) Update() {
 
 				if send {
 					exec.Command("notify-send", "Low Battery",
-						RedText(fmt.Sprintf("%v%% remaining", b.cap_pc))).Start()
+						internal.RedText(fmt.Sprintf("%v%% remaining", b.cap_pc))).Start()
 				}
 			}
 		}()
@@ -170,26 +137,26 @@ func (b *BatteryBlock) ToBlock() Block {
 	} else {
 		cap_str = strconv.Itoa(b.cap_pc) + "%"
 		if b.cap_pc < 20 {
-			cap_str = RedText(cap_str + " \uf243")
+			cap_str = internal.RedText(cap_str + " \uf243")
 		} else if b.cap_pc < 80 {
-			cap_str = OrangeText(cap_str + " \uf241")
+			cap_str = internal.OrangeText(cap_str + " \uf241")
 		} else if b.cap_pc < 60 {
-			cap_str = OrangeText(cap_str + " \uf242")
+			cap_str = internal.OrangeText(cap_str + " \uf242")
 		} else if b.cap_pc < 30 {
-			cap_str = OrangeText(cap_str + " \uf243")
+			cap_str = internal.OrangeText(cap_str + " \uf243")
 		} else {
-			cap_str = GreenText(cap_str + " \uf240")
+			cap_str = internal.GreenText(cap_str + " \uf240")
 		}
 	}
 
 	if b.status == "Unknown" {
-		status_str = WhiteText("\uf059")
+		status_str = internal.WhiteText("\uf059")
 	} else if b.status == "Full" {
-		status_str = GreenText("\uf1e6")
+		status_str = internal.GreenText("\uf1e6")
 	} else if b.status == "Charging" {
-		status_str = OrangeText("\uf1e6\uf0e7")
+		status_str = internal.OrangeText("\uf1e6\uf0e7")
 	} else if b.status == "Discharging" {
-		status_str = OrangeText("(Discharging)")
+		status_str = internal.OrangeText("(Discharging)")
 	}
 
 	out_b.full_text = fmt.Sprintf("%v %v", cap_str, status_str)
@@ -382,7 +349,7 @@ func (b *TimeBlock) Update() {
 			return
 		}
 
-		b.time = BoldText(OrangeBackground(DarkGreyText("\uf073 " + chompb(day_out) + "  \uf017 " + chompb(date_out))))
+		b.time = internal.BoldText(internal.OrangeBackground(internal.DarkGreyText(" \uf073 " + chompb(day_out) + "  \uf017 " + chompb(date_out) + " ")))
 	}
 }
 
