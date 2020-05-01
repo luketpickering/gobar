@@ -1,35 +1,12 @@
 package main
 
 import (
-	"bufio"
-	"errors"
 	"fmt"
-	"io/ioutil"
-	"os"
-	"os/exec"
-	"strconv"
 	"strings"
 	"time"
 
-	"github.com/luketpickering/gobar/pangoutils"
+	. "github.com/luketpickering/gobar/blocks"
 )
-
-func chomp(s string) string {
-	return strings.TrimRight(s, "\n\t ")
-}
-
-func chompb(s []byte) string {
-	return chomp(string(s))
-}
-
-
-func PrintBlockLine(b Block) {
-	if b.err {
-		return
-	}
-
-	fmt.Printf("\t%v,\n", b.JSONString())
-}
 
 func main() {
 
@@ -38,15 +15,19 @@ func main() {
 	blocks := []Blocklike{}
 
 	//We will just ignore blocks that fail the check
-	blocks, _ = AddBlock(blocks, &CPUUsageBlock{})
+	blocks, _ = AppendBlocklike(blocks, &CPUUsageBlock{})
 	//Set the polling frequency
 	blocks[0].(*CPUUsageBlock).PollFreq = 2
 
-	blocks, _ = AddBlock(blocks, &DiskFreeBlock{})
-	blocks, _ = AddBlock(blocks, &TimeBlock{"", ""})
-	blocks, _ = AddBlock(blocks, &TimeBlock{"Europe/London", ""})
-	blocks, _ = AddBlock(blocks, &TimeBlock{"Asia/Tokyo", ""})
-	blocks, _ = AddBlock(blocks, &BatteryBlock{})
+	blocks, _ = AppendBlocklike(blocks, &MemAvailBlock{})
+
+	blocks, _ = AppendBlocklike(blocks, &DiskFreeBlock{})
+	
+	blocks, _ = AppendBlocklike(blocks, &TimeBlock{"", ""})
+	blocks, _ = AppendBlocklike(blocks, &TimeBlock{"Europe/London", ""})
+	blocks, _ = AppendBlocklike(blocks, &TimeBlock{"Asia/Tokyo", ""})
+	
+	blocks, _ = AppendBlocklike(blocks, &BatteryBlock{})
 
 	var block_chans = []chan Block{}
 	for i := 0; i < len(blocks); i++ {
@@ -58,17 +39,17 @@ func main() {
 	fmt.Println("\t[],")
 
 	for range tick.C {
-		fmt.Println("[")
+		strbuildr := []string{"["}
 
-		for i, bl := range blocks {
-			go Poll(bl, block_chans[i])
-		}
+		PollAll(blocks, block_chans)
 
 		for i := 0; i < len(blocks); i++ {
-			PrintBlockLine(<-block_chans[i])
+			strbuildr = append(strbuildr,(<-block_chans[i]).PrintBlockLine())
 		}
 
-		fmt.Println("],")
+		strbuildr = append(strbuildr,"],")
+
+		fmt.Println(strings.Join(strbuildr," "))
 	}
 
 }

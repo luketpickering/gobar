@@ -1,4 +1,4 @@
-package internal
+package pangoutils
 
 import (
 	"fmt"
@@ -20,6 +20,7 @@ var Red color.RGBA = color.RGBA{0xDC,0x14,0x3C,0x00}
 var Green color.RGBA = color.RGBA{0x32,0xCD,0x32,0x00}
 var Blue color.RGBA = color.RGBA{0x7D,0xAC,0xD5,0x00}
 var Orange color.RGBA = color.RGBA{0xF2,0x9F,0x54,0x00}
+var DarkGrey color.RGBA = color.RGBA{0x32,0x14,0x3C,0x00}
 
 type PangoStrUnit struct {
 	s string
@@ -35,19 +36,22 @@ func MakePangoStrU(s string) PangoStrUnit {
 	return PangoStrUnit{s,color.RGBA{0xFF,0xFF,0xFF,0xFF}, false, color.RGBA{0xFF,0xFF,0xFF,0xFF}, false, Normal, false}
 }
 
-func (p *PangoStrUnit) SetFGColor(c color.RGBA) {
+func (p PangoStrUnit) SetFGColor(c color.RGBA) PangoStrUnit {
 	p.fg = c
 	p.fg_s = true
+	return p
 }
 
-func (p *PangoStrUnit) SetBGColor(c color.RGBA) {
+func (p PangoStrUnit) SetBGColor(c color.RGBA) PangoStrUnit {
 	p.bg = c
 	p.bg_s = true
+	return p
 }
 
-func (p *PangoStrUnit) SetFontWeight(w string) {
+func (p PangoStrUnit) SetFontWeight(w string) PangoStrUnit {
 	p.weight = w
 	p.weight_s = true
+	return p
 }
 
 func (p PangoStrUnit) String() string {

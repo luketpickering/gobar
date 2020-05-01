@@ -1,5 +1,7 @@
 package blocks
 
+import "errors"
+
 type Blocklike interface {
 	ToBlock() Block
 	Update()
@@ -22,8 +24,7 @@ func Poll(b Blocklike, ch chan Block) {
 }
 
 func PollAll(bs Blocklist, chs []chan Block) {
-	for i, b := bs {
-		b.Update()
-		chs[i] <- b.ToBlock()
+	for i, b := range bs {
+		go Poll(b, chs[i])
 	}
 }

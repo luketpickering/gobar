@@ -1,5 +1,16 @@
 package blocks
 
+import (
+	"bufio"
+	"fmt"
+	"os"
+	"os/exec"
+	"strconv"
+	"strings"
+
+	pgu "github.com/luketpickering/gobar/pangoutils"
+)
+
 type CPUUsage struct {
 	User, System, Idle int
 }
@@ -81,12 +92,13 @@ func (b *CPUUsageBlock) Update() {
 	go procstat_cmd.Wait()
 
 }
+
 func (b *CPUUsageBlock) ToBlock() Block {
-	out_b := DefaultBlock()
+	out_b := NewBlock()
 	out_b.min_width = "\uf2db 100%%"
 
 	if b.readerr {
-		return ErrorBlock()
+		return NewErrorBlock()
 	}
 
 	if (b.Usage[0][0].User == 0) || (b.Usage[0][0].User == 0) {
@@ -104,6 +116,7 @@ func (b *CPUUsageBlock) ToBlock() Block {
 
 	return out_b
 }
+
 func (b *CPUUsageBlock) Check() bool {
 	loc, err := exec.LookPath("nproc")
 	if err != nil {
@@ -115,7 +128,7 @@ func (b *CPUUsageBlock) Check() bool {
 	if nproc_err != nil {
 		return false
 	}
-	nproc, err := strconv.Atoi(chompb(nproc_bytes))
+	nproc, err := strconv.Atoi(pgu.Chompb(nproc_bytes))
 	if err != nil {
 		return false
 	}

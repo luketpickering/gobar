@@ -1,8 +1,16 @@
 package blocks
 
+import (
+	"os"
+	"os/exec"
+	"fmt"
+
+	pgu "github.com/luketpickering/gobar/pangoutils"
+)
+
 type TimeBlock struct {
 	TZ   string
-	time string
+	Time string
 }
 
 func (b *TimeBlock) Update() {
@@ -21,7 +29,7 @@ func (b *TimeBlock) Update() {
 	}
 
 	if len(b.TZ) != 0 {
-		b.time = chompb(date_out)
+		b.Time = pgu.Chompb(date_out)
 	} else {
 
 		day_out, day_err := exec.Command("date", "+%a %b %_d").Output()
@@ -29,13 +37,13 @@ func (b *TimeBlock) Update() {
 			return
 		}
 
-		b.time = internal.BoldText(internal.OrangeBackground(internal.DarkGreyText(" \uf073 " + chompb(day_out) + "  \uf017 " + chompb(date_out) + " ")))
+		b.Time = pgu.MakePangoStrU(" \uf073 " + pgu.Chompb(day_out) + "  \uf017 " + pgu.Chompb(date_out) + " ").SetFGColor(pgu.DarkGrey).SetBGColor(pgu.Orange).SetFontWeight(pgu.Ultrabold).String()
 	}
 }
 
 func (b *TimeBlock) ToBlock() Block {
-	out_b := PangoBlock()
-	out_b.full_text = b.time
+	out_b := NewPangoBlock()
+	out_b.full_text = b.Time
 	return out_b
 }
 

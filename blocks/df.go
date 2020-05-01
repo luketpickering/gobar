@@ -1,5 +1,11 @@
 package blocks
 
+import (
+	"os"
+	"os/exec"
+	"strings"
+)
+
 type DiskFreeBlock struct {
 	homedir string
 	df_str  string
@@ -22,7 +28,7 @@ func (b *DiskFreeBlock) Update() {
 }
 
 func (b *DiskFreeBlock) ToBlock() Block {
-	out_b := PangoBlock()
+	out_b := NewPangoBlock()
 	out_b.full_text = b.df_str
 	return out_b
 }

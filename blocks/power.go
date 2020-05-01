@@ -1,5 +1,15 @@
 package blocks
 
+import (
+	"os"
+	"os/exec"
+	"strconv"
+	"io/ioutil"
+	"fmt"
+
+	pgu "github.com/luketpickering/gobar/pangoutils"
+)
+
 type BatteryBlock struct {
 	status string
 	cap_pc int
@@ -16,7 +26,7 @@ func (b *BatteryBlock) Update() {
 	stat_bytes, err := ioutil.ReadFile("/sys/class/power_supply/BAT0/status")
 
 	if err == nil {
-		b.status = chompb(stat_bytes)
+		b.status = pgu.Chompb(stat_bytes)
 	} else {
 		b.status = "Unknown"
 	}
@@ -24,7 +34,7 @@ func (b *BatteryBlock) Update() {
 	cap_bytes, err := ioutil.ReadFile("/sys/class/power_supply/BAT0/capacity")
 
 	if err == nil {
-		b.cap_pc, err = strconv.Atoi(chompb(cap_bytes))
+		b.cap_pc, err = strconv.Atoi(pgu.Chompb(cap_bytes))
 	}
 
 	if err != nil {
@@ -49,7 +59,7 @@ func (b *BatteryBlock) Update() {
 
 				if send {
 					exec.Command("notify-send", "Low Battery",
-						internal.RedText(fmt.Sprintf("%v%% remaining", b.cap_pc))).Start()
+						pgu.MakePangoStrU(fmt.Sprintf("%v%% remaining", b.cap_pc)).SetFGColor(pgu.Red).String()).Start()
 				}
 			}
 		}()
@@ -57,7 +67,7 @@ func (b *BatteryBlock) Update() {
 }
 
 func (b *BatteryBlock) ToBlock() Block {
-	out_b := PangoBlock()
+	out_b := NewPangoBlock()
 
 	var cap_str, status_str string
 
@@ -66,26 +76,26 @@ func (b *BatteryBlock) ToBlock() Block {
 	} else {
 		cap_str = strconv.Itoa(b.cap_pc) + "%"
 		if b.cap_pc < 20 {
-			cap_str = internal.RedText(cap_str + " \uf243")
-		} else if b.cap_pc < 80 {
-			cap_str = internal.OrangeText(cap_str + " \uf241")
-		} else if b.cap_pc < 60 {
-			cap_str = internal.OrangeText(cap_str + " \uf242")
+			cap_str = pgu.MakePangoStrU(cap_str + " \uf243").SetFGColor(pgu.Red).String()
 		} else if b.cap_pc < 30 {
-			cap_str = internal.OrangeText(cap_str + " \uf243")
+			cap_str = pgu.MakePangoStrU(cap_str + " \uf243").SetFGColor(pgu.Orange).String()
+		} else if b.cap_pc < 60 {
+			cap_str = pgu.MakePangoStrU(cap_str + " \uf242").SetFGColor(pgu.Orange).String()
+		} else if b.cap_pc < 80 {
+			cap_str = pgu.MakePangoStrU(cap_str + " \uf241").SetFGColor(pgu.Green).String()
 		} else {
-			cap_str = internal.GreenText(cap_str + " \uf240")
+			cap_str = pgu.MakePangoStrU(cap_str + " \uf240").SetFGColor(pgu.Green).String()
 		}
 	}
 
 	if b.status == "Unknown" {
-		status_str = internal.WhiteText("\uf059")
+		status_str = "\uf059"
 	} else if b.status == "Full" {
-		status_str = internal.GreenText("\uf1e6")
+		status_str = pgu.MakePangoStrU("\uf1e6").SetFGColor(pgu.Green).String()
 	} else if b.status == "Charging" {
-		status_str = internal.OrangeText("\uf1e6\uf0e7")
+		status_str = pgu.MakePangoStrU("\uf1e6\uf0e7").SetFGColor(pgu.Green).String()
 	} else if b.status == "Discharging" {
-		status_str = internal.OrangeText("(Discharging)")
+		status_str = pgu.MakePangoStrU("(Discharging)").SetFGColor(pgu.Orange).String()
 	}
 
 	out_b.full_text = fmt.Sprintf("%v %v", cap_str, status_str)

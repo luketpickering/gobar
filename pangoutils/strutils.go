@@ -1,9 +1,11 @@
 package pangoutils
 
-func chomp(s string) string {
+import "strings"
+
+func Chomp(s string) string {
 	return strings.TrimRight(s, "\n\t ")
 }
 
-func chompb(s []byte) string {
-	return chomp(string(s))
+func Chompb(s []byte) string {
+	return Chomp(string(s))
 }
