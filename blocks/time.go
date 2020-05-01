@@ -37,7 +37,7 @@ func (b *TimeBlock) Update() {
 			return
 		}
 
-		b.Time = pgu.MakePangoStrU(" \uf073 " + pgu.Chompb(day_out) + "  \uf017 " + pgu.Chompb(date_out) + " ").SetFGColor(pgu.DarkGrey).SetBGColor(pgu.Orange).SetFontWeight(pgu.Ultrabold).String()
+		b.Time = pgu.MakePangoStrU(" \uf073 " + pgu.Chompb(day_out) + "  \uf017 " + pgu.Chompb(date_out) + " ").SetFGColor(pgu.DarkGrey).SetBGColor(pgu.Blue).SetFontWeight(pgu.Ultrabold).String()
 	}
 }
 

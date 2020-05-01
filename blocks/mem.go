@@ -7,6 +7,8 @@ import (
 	"os/exec"
 	"strconv"
 	"strings"
+
+	pgu "github.com/luketpickering/gobar/pangoutils"
 )
 
 type MemAvailBlock struct {
@@ -55,13 +57,19 @@ func (b *MemAvailBlock) Update() {
 	}
 
 	if (memt > 0) && (mema > 0) {
-		b.mem_str = fmt.Sprintf("\uf538 %v%%",int((1.0 - float32(mema)/float32(memt))*100))
+		mem_pc := int((1.0 - float32(mema)/float32(memt))*100)
+		if mem_pc > 90 {
+			b.mem_str = pgu.MakePangoStrU(fmt.Sprintf(" \uf538 %v%% ",mem_pc)).SetBGColor(pgu.Red).SetFGColor(pgu.DarkGrey).String()
+		} else {
+			b.mem_str = fmt.Sprintf(" \uf538 %v%% ",mem_pc)
+		}
 	}
 }
 
 func (b *MemAvailBlock) ToBlock() Block {
 	out_b := NewPangoBlock()
 	out_b.full_text = b.mem_str
+	out_b.min_width = " \uf538 100% "
 	return out_b
 }
 

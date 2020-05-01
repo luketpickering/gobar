@@ -30,7 +30,7 @@ func NewErrorBlock() Block {
 
 
 func (b Block) JSONString() string {
-	return fmt.Sprintf("{\"markup\": \"%v\", \"separator\": %v,\"separate_block_width\": \"%v\", \"min_width\": \"%v\", \"full_text\": \"%v\"}",
+	return fmt.Sprintf("{\"markup\": \"%v\", \"separator\": %v,\"separate_block_width\": \"%v\", \"min_width\": \"%v\", \"align\": \"center\", \"full_text\": \"%v\"}",
 		b.markup, b.separator, b.separate_block_width, b.min_width, b.full_text)
 }
 

@@ -95,14 +95,14 @@ func (b *CPUUsageBlock) Update() {
 
 func (b *CPUUsageBlock) ToBlock() Block {
 	out_b := NewBlock()
-	out_b.min_width = "\uf2db 100%%"
+	out_b.min_width = " \uf2db ---% "
 
 	if b.readerr {
 		return NewErrorBlock()
 	}
 
 	if (b.Usage[0][0].User == 0) || (b.Usage[0][0].User == 0) {
-		out_b.full_text = fmt.Sprintf("\uf2db -%%")
+		out_b.full_text = " \uf2db ---% "
 		return out_b
 	}
 
@@ -111,8 +111,14 @@ func (b *CPUUsageBlock) ToBlock() Block {
 
 	CPUUsage := Usage(b.Usage[last_tick], b.Usage[prev_tick])
 
-	out_b.full_text = fmt.Sprintf("\uf2db %v%%", CPUUsage)
-	out_b.min_width = "\uf2db 100%%"
+
+	if CPUUsage > ((b.nproc - 1)*100) {
+		out_b.full_text = pgu.MakePangoStrU(fmt.Sprintf(" \uf2db %v%% ",CPUUsage)).SetBGColor(pgu.Red).SetFGColor(pgu.DarkGrey).String()
+	} else if CPUUsage > (b.nproc*100/2) {
+		out_b.full_text = pgu.MakePangoStrU(fmt.Sprintf(" \uf2db %v%% ",CPUUsage)).SetFGColor(pgu.Orange).String()
+	} else {
+		out_b.full_text = fmt.Sprintf(" \uf2db %v%% ",CPUUsage)
+	}
 
 	return out_b
 }

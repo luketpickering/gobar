@@ -4,6 +4,11 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"fmt"
+	"strconv"
+
+	pgu "github.com/luketpickering/gobar/pangoutils"
+
 )
 
 type DiskFreeBlock struct {
@@ -24,12 +29,22 @@ func (b *DiskFreeBlock) Update() {
 		return
 	}
 
-	b.df_str = "\uf0a0 " + splits[1]
+	df_pc, _ := strconv.Atoi(strings.TrimRight(splits[1],"%"))
+
+	if df_pc > 90 {
+		b.df_str = pgu.MakePangoStrU(fmt.Sprintf(" \uf0a0 %v%% ",df_pc)).SetBGColor(pgu.Red).SetFGColor(pgu.DarkGrey).String()		
+	} else if df_pc > 80 {
+		b.df_str = pgu.MakePangoStrU(fmt.Sprintf(" \uf0a0 %v%% ",df_pc)).SetFGColor(pgu.Orange).String()
+	} else {
+		b.df_str = fmt.Sprintf(" \uf0a0 %v%% ",df_pc)
+	
+	}
 }
 
 func (b *DiskFreeBlock) ToBlock() Block {
 	out_b := NewPangoBlock()
 	out_b.full_text = b.df_str
+	out_b.min_width = " \uf0a0 100% "
 	return out_b
 }
 
