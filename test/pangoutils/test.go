@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	my := pgu.MakePangoStrU("hello")
+	my := pgu.NewPangoStrU("hello")
 
 	fmt.Println(my)
 

@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"strconv"
 	"strings"
+	"bytes"
 
 	pgu "github.com/luketpickering/gobar/pangoutils"
 )
@@ -55,14 +56,12 @@ func (b *CPUUsageBlock) Update() {
 		return
 	}
 
-	procstat_cmd := exec.Command("cat", "/proc/stat")
-	procstat_pipe, procstat_err := procstat_cmd.StdoutPipe()
-
+	procstat_bytes, procstat_err := exec.Command("cat", "/proc/stat").Output()
 	if procstat_err != nil {
 		return
 	}
-	scanner := bufio.NewScanner(procstat_pipe)
-	procstat_cmd.Start()
+
+	scanner := bufio.NewScanner(bytes.NewBuffer(procstat_bytes))
 
 	//Skip the first line which is the average
 	scanner.Scan()
@@ -87,14 +86,10 @@ func (b *CPUUsageBlock) Update() {
 
 		b.Usage[b.now_idx][i] = CPUUsage{User, System, Idle}
 	}
-
-	//I don't care about the rest of the output
-	go procstat_cmd.Wait()
-
 }
 
 func (b *CPUUsageBlock) ToBlock() Block {
-	out_b := NewBlock()
+	out_b := NewPangoBlock()
 	out_b.min_width = " \uf2db ---% "
 
 	if b.readerr {
@@ -113,9 +108,9 @@ func (b *CPUUsageBlock) ToBlock() Block {
 
 
 	if CPUUsage > ((b.nproc - 1)*100) {
-		out_b.full_text = pgu.MakePangoStrU(fmt.Sprintf(" \uf2db %v%% ",CPUUsage)).SetBGColor(pgu.Red).SetFGColor(pgu.DarkGrey).String()
+		out_b.full_text = pgu.NewPangoStrU(fmt.Sprintf(" \uf2db %v%% ",CPUUsage)).SetBGColor(pgu.Red).SetFGColor(pgu.DarkGrey).String()
 	} else if CPUUsage > (b.nproc*100/2) {
-		out_b.full_text = pgu.MakePangoStrU(fmt.Sprintf(" \uf2db %v%% ",CPUUsage)).SetFGColor(pgu.Orange).String()
+		out_b.full_text = pgu.NewPangoStrU(fmt.Sprintf(" \uf2db %v%% ",CPUUsage)).SetFGColor(pgu.Orange).String()
 	} else {
 		out_b.full_text = fmt.Sprintf(" \uf2db %v%% ",CPUUsage)
 	}

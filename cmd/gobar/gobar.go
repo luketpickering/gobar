@@ -15,13 +15,15 @@ func main() {
 	blocks := []Blocklike{}
 
 	//We will just ignore blocks that fail the check
+	blocks, _ = AppendBlocklike(blocks, &SoundBlock{})
 	blocks, _ = AppendBlocklike(blocks, &CPUUsageBlock{})
 	//Set the polling frequency
-	blocks[0].(*CPUUsageBlock).PollFreq = 2
+	blocks[1].(*CPUUsageBlock).PollFreq = 2
 
 	blocks, _ = AppendBlocklike(blocks, &MemAvailBlock{})
 
 	blocks, _ = AppendBlocklike(blocks, &DiskFreeBlock{})
+	blocks, _ = AppendBlocklike(blocks, &NetworkBlock{})
 	
 	blocks, _ = AppendBlocklike(blocks, &TimeBlock{"", ""})
 	blocks, _ = AppendBlocklike(blocks, &TimeBlock{"Europe/London", ""})

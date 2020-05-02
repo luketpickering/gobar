@@ -32,7 +32,7 @@ type PangoStrUnit struct {
 	weight_s bool
 }
 
-func MakePangoStrU(s string) PangoStrUnit {
+func NewPangoStrU(s string) PangoStrUnit {
 	return PangoStrUnit{s,color.RGBA{0xFF,0xFF,0xFF,0xFF}, false, color.RGBA{0xFF,0xFF,0xFF,0xFF}, false, Normal, false}
 }
 

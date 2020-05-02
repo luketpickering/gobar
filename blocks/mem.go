@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"strconv"
 	"strings"
+	"bytes"
 
 	pgu "github.com/luketpickering/gobar/pangoutils"
 )
@@ -28,14 +29,11 @@ func (b *MemAvailBlock) Update() {
 	}
 
 
-	memi_cmd := exec.Command("cat", "/proc/meminfo")
-	memi_pipe, memi_err := memi_cmd.StdoutPipe()
-
+	memi_bytes, memi_err := exec.Command("cat", "/proc/meminfo").Output()
 	if memi_err != nil {
 		return
 	}
-	scanner := bufio.NewScanner(memi_pipe)
-	memi_cmd.Start()
+	scanner := bufio.NewScanner(bytes.NewBuffer(memi_bytes))
 
 	memt, mema := 0,0
 
@@ -59,7 +57,7 @@ func (b *MemAvailBlock) Update() {
 	if (memt > 0) && (mema > 0) {
 		mem_pc := int((1.0 - float32(mema)/float32(memt))*100)
 		if mem_pc > 90 {
-			b.mem_str = pgu.MakePangoStrU(fmt.Sprintf(" \uf538 %v%% ",mem_pc)).SetBGColor(pgu.Red).SetFGColor(pgu.DarkGrey).String()
+			b.mem_str = pgu.NewPangoStrU(fmt.Sprintf(" \uf538 %v%% ",mem_pc)).SetBGColor(pgu.Red).SetFGColor(pgu.DarkGrey).String()
 		} else {
 			b.mem_str = fmt.Sprintf(" \uf538 %v%% ",mem_pc)
 		}

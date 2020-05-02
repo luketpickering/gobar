@@ -59,7 +59,7 @@ func (b *BatteryBlock) Update() {
 
 				if send {
 					exec.Command("notify-send", "Low Battery",
-						pgu.MakePangoStrU(fmt.Sprintf("%v%% remaining", b.cap_pc)).SetFGColor(pgu.Red).String()).Start()
+						pgu.NewPangoStrU(fmt.Sprintf("%v%% remaining", b.cap_pc)).SetFGColor(pgu.Red).String()).Start()
 				}
 			}
 		}()
@@ -69,33 +69,35 @@ func (b *BatteryBlock) Update() {
 func (b *BatteryBlock) ToBlock() Block {
 	out_b := NewPangoBlock()
 
-	var cap_str, status_str string
-
+	var cap_str string
 	if b.cap_pc == -1 {
-		cap_str = "---%"
+		cap_str = ""
 	} else {
-		cap_str = strconv.Itoa(b.cap_pc) + "%"
+		// cap_str = strconv.Itoa(b.cap_pc) + "%"
 		if b.cap_pc < 20 {
-			cap_str = pgu.MakePangoStrU(cap_str + " \uf243").SetFGColor(pgu.Red).String()
+			cap_str = pgu.NewPangoStrU("\uf243").SetFGColor(pgu.Red).String()
 		} else if b.cap_pc < 30 {
-			cap_str = pgu.MakePangoStrU(cap_str + " \uf243").SetFGColor(pgu.Orange).String()
+			cap_str = pgu.NewPangoStrU("\uf243").SetFGColor(pgu.Orange).String()
 		} else if b.cap_pc < 60 {
-			cap_str = pgu.MakePangoStrU(cap_str + " \uf242").SetFGColor(pgu.Orange).String()
+			cap_str = pgu.NewPangoStrU("\uf242").SetFGColor(pgu.Orange).String()
 		} else if b.cap_pc < 80 {
-			cap_str = pgu.MakePangoStrU(cap_str + " \uf241").SetFGColor(pgu.Green).String()
+			cap_str = pgu.NewPangoStrU("\uf241").SetFGColor(pgu.Green).String()
 		} else {
-			cap_str = pgu.MakePangoStrU(cap_str + " \uf240").SetFGColor(pgu.Green).String()
+			cap_str = pgu.NewPangoStrU("\uf240").SetFGColor(pgu.Green).String()
 		}
 	}
+
+	var status_str string
 
 	if b.status == "Unknown" {
 		status_str = "\uf059"
 	} else if b.status == "Full" {
-		status_str = pgu.MakePangoStrU("\uf1e6").SetFGColor(pgu.Green).String()
+		cap_str = ""
+		status_str = pgu.NewPangoStrU("\uf1e6").SetFGColor(pgu.Green).String()
 	} else if b.status == "Charging" {
-		status_str = pgu.MakePangoStrU("\uf1e6\uf0e7").SetFGColor(pgu.Green).String()
+		status_str = pgu.NewPangoStrU("\uf1e6\uf0e7").SetFGColor(pgu.Green).String()
 	} else if b.status == "Discharging" {
-		status_str = pgu.MakePangoStrU("(Discharging)").SetFGColor(pgu.Orange).String()
+		status_str = pgu.NewPangoStrU("\uf0e7").SetFGColor(pgu.Orange).String()
 	}
 
 	out_b.full_text = fmt.Sprintf("%v %v", cap_str, status_str)

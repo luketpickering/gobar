@@ -32,9 +32,9 @@ func (b *DiskFreeBlock) Update() {
 	df_pc, _ := strconv.Atoi(strings.TrimRight(splits[1],"%"))
 
 	if df_pc > 90 {
-		b.df_str = pgu.MakePangoStrU(fmt.Sprintf(" \uf0a0 %v%% ",df_pc)).SetBGColor(pgu.Red).SetFGColor(pgu.DarkGrey).String()		
+		b.df_str = pgu.NewPangoStrU(fmt.Sprintf(" \uf0a0 %v%% ",df_pc)).SetBGColor(pgu.Red).SetFGColor(pgu.DarkGrey).String()		
 	} else if df_pc > 80 {
-		b.df_str = pgu.MakePangoStrU(fmt.Sprintf(" \uf0a0 %v%% ",df_pc)).SetFGColor(pgu.Orange).String()
+		b.df_str = pgu.NewPangoStrU(fmt.Sprintf(" \uf0a0 %v%% ",df_pc)).SetFGColor(pgu.Orange).String()
 	} else {
 		b.df_str = fmt.Sprintf(" \uf0a0 %v%% ",df_pc)
 	
