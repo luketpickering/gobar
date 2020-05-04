@@ -16,9 +16,10 @@ func main() {
 
 	//We will just ignore blocks that fail the check
 	blocks, _ = AppendBlocklike(blocks, &SoundBlock{})
+	blocks, _ = AppendBlocklike(blocks, &CPUTempBlock{})
 	blocks, _ = AppendBlocklike(blocks, &CPUUsageBlock{})
 	//Set the polling frequency
-	blocks[1].(*CPUUsageBlock).PollFreq = 2
+	blocks[len(blocks)-1].(*CPUUsageBlock).PollFreq = 2
 
 	blocks, _ = AppendBlocklike(blocks, &MemAvailBlock{})
 

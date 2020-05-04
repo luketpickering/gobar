@@ -50,7 +50,7 @@ func (b *SoundBlock) Update() {
 			continue
 		}
 		if jack_regex.MatchString(ln) {
-b.micjack_on = true
+			b.micjack_on = true
 		break		}
 		
 	}
